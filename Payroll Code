@@ -1,0 +1,105 @@
+
+
+Private Sub CommandButton1_Click()
+    'Command Button(Select) to get filename with browser
+    Dim fn, e
+    Dim ws As Worksheet
+    fn = Application.GetOpenFilename("csv, *.csv, xlsx,*.xlsx", 1, "Open Timesheet", , False)
+    
+    'Displaying filename is textbox
+    TextBox1 = fn
+    
+    
+    
+
+End Sub
+
+
+Private Sub CommandButton2_Click()
+    'Command Button(Start) to put hours into payroll
+    Dim sh As Worksheet, wb As Workbook, w As Workbook
+    Dim col, b, c, tR, tR2, lastCol As Integer
+    Dim uniqID, error, hours, p, check As Variant
+    Dim inArr As Boolean
+    
+
+    'Setting workbook to selected file
+    Set wb = Workbooks.Open(TextBox1, True, True)
+    Set sh = wb.Worksheets(1)
+
+    'Extracting data from file.
+    tR = Rows(Rows.Count).End(xlUp).Row 'Row count from file
+    uniqID = Range(Cells(2, 5), Cells(tR, 5)).Value 'Phone number from CSV
+    hours = Range(Cells(2, 14), Cells(tR, 14)).Value 'Hours from CSV
+    
+    'Close Workbook after extracting
+    wb.Close
+    
+    
+    'Activating Payroll Workbook
+    Set w = ThisWorkbook
+    w.Activate
+    w.Sheets("Current").Activate
+    'Getting number of columns
+    lastCol = w.ActiveSheet.ListObjects("Table181114172023262935414447505356596265687174778083868992959810110498107110113296").Range.Columns.Count
+    
+    'Checking for missing numbers in Payroll
+    tR2 = Rows(Rows.Count).End(xlUp).Row
+    check = Range(Cells(3, 2), Cells(tR2, 2)).Value
+    For Z = 1 To tR - 1
+        For i = 1 To tR2 - 3
+            If uniqID(Z, 1) = check(i, 1) Then
+            inArr = True
+            Exit For
+            End If
+        Next i
+        error = uniqID(Z, 1)
+        If inArr = False Then
+        MsgBox (error + " was not found")
+        End If
+        inArr = False
+    Next Z
+    
+    'Adding hours into payroll
+    For col = 4 To lastCol
+        If ComboBox1 = Cells(1, col) Then
+            For b = 1 To tR - 1
+               For c = 1 To tR2
+                    If uniqID(b, 1) = Cells(c + 3, 2) Then 'Matching phone numbers with with uniqID
+                    Cells(c + 3, col) = hours(b, 1) 'Adding hours to matched ID
+                    Exit For
+                    End If
+                    Next c
+            Next b
+        End If
+    Next col
+
+End Sub
+
+
+Private Sub TextBox2_Change()
+
+End Sub
+
+Private Sub Image1_BeforeDragOver(ByVal Cancel As MSForms.ReturnBoolean, ByVal Data As MSForms.DataObject, ByVal X As Single, ByVal Y As Single, ByVal DragState As MSForms.fmDragState, ByVal Effect As MSForms.ReturnEffect, ByVal Shift As Integer)
+
+End Sub
+
+Private Sub Label2_Click()
+
+End Sub
+
+Private Sub UserForm_Initialize()
+    Dim sh As Worksheet
+    Set sh = ThisWorkbook.Sheets("Current")
+    Dim i As Integer
+    
+    'Displaying column choices
+    Me.ComboBox1.Clear
+    For i = 3 To Application.WorksheetFunction.CountA(sh.Range("1:1"))
+        Me.ComboBox1.AddItem sh.Cells(1, i).Value
+    Next i
+    
+End Sub
+
+
