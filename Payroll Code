@@ -19,7 +19,7 @@ Private Sub CommandButton2_Click()
     'Command Button(Start) to put hours into payroll
     Dim sh As Worksheet, wb As Workbook, w As Workbook
     Dim col, b, c, tR, tR2, lastCol As Integer
-    Dim uniqID, error, hours, p, check As Variant
+    Dim uniqID, error, hours, p, check, last, first, fName, lName As Variant
     Dim inArr As Boolean
     
 
@@ -31,6 +31,10 @@ Private Sub CommandButton2_Click()
     tR = Rows(Rows.Count).End(xlUp).Row 'Row count from file
     uniqID = Range(Cells(2, 5), Cells(tR, 5)).Value 'Phone number from CSV
     hours = Range(Cells(2, 14), Cells(tR, 14)).Value 'Hours from CSV
+    first = Range(Cells(2, 3), Cells(tR, 3)).Value 'First name from CSV
+    last = Range(Cells(2, 4), Cells(tR, 4)).Value 'Last name from CSV
+ 
+    
     
     'Close Workbook after extracting
     wb.Close
@@ -54,8 +58,10 @@ Private Sub CommandButton2_Click()
             End If
         Next i
         error = uniqID(Z, 1)
+        fName = first(Z, 1)
+        lName = last(Z, 1)
         If inArr = False Then
-        MsgBox (error + " was not found")
+        MsgBox (error + " " + fName + " " + lName + " was not found")
         End If
         inArr = False
     Next Z
@@ -73,7 +79,6 @@ Private Sub CommandButton2_Click()
             Next b
         End If
     Next col
-
 End Sub
 
 
